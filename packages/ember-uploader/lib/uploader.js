@@ -3,6 +3,7 @@ var get = Ember.get,
 
 Ember.Uploader = Ember.Object.extend(Ember.Evented, {
   url: null,
+  headers: null,
   paramNamespace: null,
   paramName: 'file',
 
@@ -25,11 +26,12 @@ Ember.Uploader = Ember.Object.extend(Ember.Evented, {
     var data = this.setupFormData(files, extra);
     var url  = get(this, 'url');
     var type = get(this, 'type');
+    var headers = get(this, 'headers');
     var self = this;
 
     set(this, 'isUploading', true);
 
-    return this.ajax(url, data, type).then(function(respData) {
+    return this.ajax(url, data, type, headers).then(function(respData) {
       self.didUpload(respData);
       return respData;
     });
@@ -76,10 +78,11 @@ Ember.Uploader = Ember.Object.extend(Ember.Evented, {
     this.trigger('progress', e);
   },
 
-  ajax: function(url, params, method) {
+  ajax: function(url, params, method, headers) {
     var self = this;
     var settings = {
       url: url,
+      headers: headers,
       type: method || 'POST',
       contentType: false,
       processData: false,
